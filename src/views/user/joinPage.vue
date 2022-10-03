@@ -27,7 +27,7 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+import $axios from 'axios'
 export default {
   name: 'JoinPage',
   data: () => ({
@@ -53,7 +53,7 @@ export default {
       }
       const data = this.signup
       const vm = this
-      axios
+      $axios
         .post('/user', data)
         .then(function (response) {
           console.log('data : ', response.data)

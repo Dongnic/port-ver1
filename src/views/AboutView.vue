@@ -8,7 +8,7 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+import $axios from 'axios'
 export default {
   data () {
     return {
@@ -20,7 +20,7 @@ export default {
   created () {
     console.log('created ===========')
     const thisVal = this
-    axios
+    $axios
       .get('/user/userInfo')
       .then(function (response) {
         console.log('/userInfo', response)
@@ -37,7 +37,7 @@ export default {
   methods: {
     getUserList: function () {
       const thisVal = this
-      axios
+      $axios
         .get('/user')
         .then(function (response) {
           console.log("get('/user')", response)
