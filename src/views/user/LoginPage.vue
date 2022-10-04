@@ -9,6 +9,7 @@
       <br /><br />
       <button type="submit">로그인</button>
     </form>
+    <router-link to="/about">About</router-link> |
     <router-link to="/joinForm">가입하기</router-link>
      <br />
     <h3>SNS 로그인</h3>

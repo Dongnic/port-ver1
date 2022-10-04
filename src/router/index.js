@@ -4,40 +4,47 @@ import HomeView from '../views/HomeView.vue'
 const routes = [
   {
     path: '/',
-    name: 'home',
+    name: 'Home',
     component: HomeView
   },
   {
     path: '/about',
-    name: 'about',
+    name: 'About',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
+    component: () =>
+      import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
   },
   {
     path: '/loginForm',
-    name: 'login',
+    name: 'Login',
     component: () =>
-      import(/* webpackChunkName: "user" */ '../views/user/loginPage.vue')
+      import(/* webpackChunkName: "user" */ '../views/user/LoginPage.vue')
   },
   {
     path: '/joinForm',
-    name: 'join',
+    name: 'Join',
     component: () =>
-      import(/* webpackChunkName: "user" */ '../views/user/joinPage.vue')
+      import(/* webpackChunkName: "user" */ '../views/user/JoinPage.vue')
   },
   {
     path: '/joinDone',
-    name: 'joinDone',
+    name: 'JoinDone',
     component: () =>
-      import(/* webpackChunkName: "user" */ '../views/user/joinDone.vue')
+      import(/* webpackChunkName: "user" */ '../views/user/JoinDone.vue')
+  },
+  {
+    path: '/portChat',
+    name: 'PortChat',
+    component: () =>
+      import(/* webpackChunkName: "port" */ '../views/port/PortChat.vue')
   },
   {
     path: '/test',
-    name: 'storeTest',
+    name: 'StoreTest',
     component: () =>
-      import(/* webpackChunkName: "user" */ '../views/test/StoreTest.vue')
+      import(/* webpackChunkName: "test" */ '../views/test/StoreTest.vue')
   }
 ]
 

@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>This is an about page</h1>
+    <router-link to="/">Home</router-link>
     {{ counter }}
     {{ times2 }}
     {{ times2 }}

@@ -1,5 +1,6 @@
 <template>
   <div class="about">
+    <router-link to="/">Home</router-link>
     <h1>로그인회원 정보 : {{ userInfo }}</h1>
     <button @click="getUser()">get username!!</button>
     <h1>회원명 : {{ userName}}</h1>
