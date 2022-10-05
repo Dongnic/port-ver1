@@ -32,8 +32,25 @@
 </template>
 <script>
 import $axios from 'axios'
+// import { useStore } from 'vuex'
+// import { computed, watch } from 'vue'
+
 export default {
   name: 'LoginPage',
+  // setup () {
+  //   const store = useStore()
+  //   // state는 moduleName으로 쪼개서 들어간다.
+  //   const userInfo = computed(() => store.getters['module1/getUserInfo'])
+  //   // getters와 mutation은 전역으로 들어가서 store.getters.Counter.time2가 아니라 store.getters.time2이다
+  //   watch(userInfo, () => {
+  //     console.log('로그인 했음', userInfo)
+  //     this.$router.push({
+  //       name: 'PortChat',
+  //       params: { userInfo: userInfo }
+  //     })
+  //   })
+  //   return { userInfo }
+  // },
   data: () => ({
     username: '',
     password: ''

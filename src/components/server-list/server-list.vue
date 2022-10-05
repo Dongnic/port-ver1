@@ -6,7 +6,7 @@
          mentions = 읽지 않은 메세지 갯수
          selected = 현재 선택한 채널
     -->
-    <ServerButton isHome />
+    <HomeButton  />
     <div class="separator"></div>
     <div id="server">
       <ServerButton selected hasNotifications :mentions="3" />
@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import HomeButton from './home-button.vue'
 import ServerButton from './server-button.vue'
 import ServerButton2 from './server-button2.vue'
 import ServerButton3 from './server-button3.vue'
@@ -42,6 +43,7 @@ export default {
     currentTab: Number
   },
   components: {
+    HomeButton,
     ServerButton,
     ServerButton2,
     ServerButton3

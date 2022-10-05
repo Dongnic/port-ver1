@@ -1,13 +1,12 @@
 <template>
   <!-- layout  -->
   <div id="grid">
-    <router-link to="/loginForm">로그인</router-link> |
     <ServerList :tabs="tabs" :currentTab="currentTab" />
     <ServerName serverName="port Server" />
     <ChannelList />
-    <UserInfo userName="YDJ" />
+    <UserInfo :userName="userInfo.username" />
     <ChannelInfo channelName="CRB's Channel" />
-    <ChannelData />
+    <ChannelData :userInfo="userInfo"/>
     <UserList :Userlist="Userlist" />
   </div>
 </template>
@@ -21,8 +20,20 @@ import UserInfo from '@/components/user-info/user-info'
 import ChannelInfo from '@/components/channel-info/channel-info'
 import ChannelData from '@/components/channel-data/channel-data'
 import UserList from '@/components/user-list/user-list'
+import { useStore } from 'vuex'
+import { computed } from 'vue'
 
 export default {
+  name: 'PortChat',
+  setup () {
+    const store = useStore()
+    // const route = useRoute()
+    const userInfo = computed(() => store.getters['module1/getUserInfo'])
+    const load = () => store.dispatch('module1/loadUserName')
+    load()
+    console.log(userInfo)
+    return { userInfo }
+  },
   components: {
     ServerList,
     ServerName,

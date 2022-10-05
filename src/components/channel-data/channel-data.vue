@@ -29,7 +29,7 @@
       >
         <Mention>유동준</Mention> Hii, how are you ??
       </ChannelMessage>
-
+      <ChannelMessage>{{userInfo}}</ChannelMessage>
       <!--message 배열만큼 반복, User 1의 작성자가
       현재 날짜로-->
       <ChannelMessage
@@ -69,6 +69,10 @@ import ChannelMessage from './channel-message'
 import Mention from './channel-mention'
 
 export default {
+  name: 'channel-data',
+  props: {
+    userInfo: Object
+  },
   components: {
     At,
     ChannelMessage,

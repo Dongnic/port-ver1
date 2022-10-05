@@ -10,6 +10,9 @@ export const module1 = {
     userName: '원래이름'
   },
   mutations: {
+    SET_USER_INFO (state, value) {
+      state.userInfo = value
+    },
     SET_USER_NAME (state, value) {
       state.userName = value
     }
@@ -30,6 +33,7 @@ export const module1 = {
           console.log('헤더 : ', response.headers)
           console.log('data : ', response.data)
           console.log('data type : ', typeof response.data)
+          commit('SET_USER_INFO', response.data)
           commit('SET_USER_NAME', response.data.username)
         })
         .catch(function (error) {
@@ -39,6 +43,10 @@ export const module1 = {
     }
   },
   getters: {
+    getUserInfo (state) {
+      console.log(state.userInfo)
+      return state.userInfo
+    },
     getUserName (state) {
       console.log(state.userName)
       return state.userName
