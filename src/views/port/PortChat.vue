@@ -29,10 +29,15 @@ export default {
     const store = useStore()
     // const route = useRoute()
     const userInfo = computed(() => store.getters['module1/getUserInfo'])
-    const load = () => store.dispatch('module1/loadUserName')
+    const jwtToken = computed(() => store.getters['module1/getJwtToken'])
+    const load = () => store.dispatch('module1/loadUser')
     load()
     console.log(userInfo)
-    return { userInfo }
+    return { userInfo, jwtToken }
+  },
+  mounted () {
+    console.log('this.$route.query.token', this.$route.query.token)
+    this.$store.dispatch('module1/changeJwtToken', this.$route.query.token)
   },
   components: {
     ServerList,
