@@ -22,22 +22,31 @@ import ChannelData from '@/components/channel-data/channel-data'
 import UserList from '@/components/user-list/user-list'
 import { useStore } from 'vuex'
 import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 
 export default {
   name: 'PortChat',
   setup () {
+    console.log('setup')
     const store = useStore()
+    const route = useRoute()
     // const route = useRoute()
-    const userInfo = computed(() => store.getters['module1/getUserInfo'])
-    const jwtToken = computed(() => store.getters['module1/getJwtToken'])
+    const setToken = () => store.dispatch('module1/changeJwtToken', route.query.token)
+    setToken()
     const load = () => store.dispatch('module1/loadUser')
     load()
-    console.log(userInfo)
-    return { userInfo, jwtToken }
+    const loadList = () => store.dispatch('module1/loadUserList')
+    loadList()
+    const userInfo = computed(() => store.getters['module1/getUserInfo'])
+    const userList = computed(() => store.getters['module1/getUserList'])
+    const jwtToken = computed(() => store.getters['module1/getJwtToken'])
+    console.log('userInfo : ', userInfo)
+    console.log('jwtToken : ', jwtToken)
+    return { userInfo, jwtToken, userList }
   },
   mounted () {
+    console.log('mounted')
     console.log('this.$route.query.token', this.$route.query.token)
-    this.$store.dispatch('module1/changeJwtToken', this.$route.query.token)
   },
   components: {
     ServerList,

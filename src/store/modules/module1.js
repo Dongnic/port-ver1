@@ -7,6 +7,7 @@ export const module1 = {
     server: [],
     currentServer: '',
     userInfo: [],
+    userList: [],
     userName: '원래이름',
     jwtToken: 'no'
   },
@@ -19,6 +20,9 @@ export const module1 = {
     },
     SET_JWT_TOKEN (state, value) {
       state.jwtToken = value
+    },
+    SET_USER_LIST (state, value) {
+      state.userList = value
     }
   },
   actions: {
@@ -59,6 +63,19 @@ export const module1 = {
           console.log(error)
           commit('SET_USER_NAME', '로그인안함')
         })
+    },
+    loadUserList ({ commit }) {
+      $axios
+        .get('/user')
+        .then(function (response) {
+          console.log("get('/user')", response)
+          console.log('data : ', response.data)
+          console.log('data type : ', typeof response.data)
+          commit('SET_USER_INFO', response.data)
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
     }
   },
   getters: {
@@ -69,6 +86,10 @@ export const module1 = {
     getUserInfo (state) {
       console.log(state.userInfo)
       return state.userInfo
+    },
+    getUserList (state) {
+      console.log(state.userList)
+      return state.userList
     },
     getJwtToken (state) {
       console.log(state.jwtToken)

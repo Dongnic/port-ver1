@@ -10,7 +10,7 @@
       <ChannelMessage
         v-for="message in 1"
         :key="message"
-        authorName="Gabriel Lopes"
+        authorName="채널 안내"
         :date="getDate"
       >
         Well come to my discord-clone. See this project in
@@ -27,13 +27,13 @@
         authorName="Bot"
         :date="getDate"
       >
-        <Mention>유동준</Mention> Hii, how are you ??
+        <Mention>{{userInfo.username}}</Mention> Hii, how are you ??
       </ChannelMessage>
       <ChannelMessage>{{userInfo}}</ChannelMessage>
       <!--message 배열만큼 반복, User 1의 작성자가
       현재 날짜로-->
       <ChannelMessage
-        authorName="User 1"
+        :authorName="userInfo.username"
         :date="getDate"
         v-for="message in messagesArray"
         :key="message"

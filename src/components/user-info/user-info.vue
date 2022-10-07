@@ -18,8 +18,8 @@
 </template>
 
 <script>
-import Mic from 'vue-material-design-icons/Microphone'
-import HeadPhones from 'vue-material-design-icons/Headphones'
+// import Mic from 'vue-material-design-icons/Microphone'
+// import HeadPhones from 'vue-material-design-icons/Headphones'
 import Settings from 'vue-material-design-icons/CogOutline'
 
 export default {
@@ -28,8 +28,8 @@ export default {
     userName: String
   },
   components: {
-    Mic,
-    HeadPhones,
+    // Mic,
+    // HeadPhones,
     Settings
   }
 }

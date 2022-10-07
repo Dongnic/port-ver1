@@ -5,6 +5,7 @@
     <router-link to="/about">About</router-link> |
     <router-link to="/joinForm">가입하기</router-link> |
     <router-link to="/loginForm">로그인</router-link> |
+    <router-link to="/loginJoin">메인로그인</router-link> |
     <router-link to="/test">테스트</router-link>
   </div>
 </template>
