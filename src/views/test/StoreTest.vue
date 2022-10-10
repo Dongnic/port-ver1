@@ -18,13 +18,14 @@
     <button type="button" @click="getRooms">채팅리스트 불러오기</button>
     | Chatrooms | {{chatrooms}}
     <form @submit.prevent="sendMessage()">
-      <input type="text" name="title" v-model.trim="title" placeholder="제목 입력" minlength="1" required/>
+      <input type="text" name="title" v-model.trim="title" placeholder="채팅 입력" minlength="1" required/>
       <button type="submit">채팅 입력</button>
     </form>
+    <button type="button" @click="resetTitle">입력창 리셋</button>
   </div>
 </template>
 <script>
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import $axios from 'axios'
 
@@ -39,19 +40,18 @@ export default {
     const userInfo = computed(() => store.getters['module1/getUserInfo'])
     const jwtToken = computed(() => store.getters['module1/getJwtToken'])
     // getters와 mutation은 전역으로 들어가서 store.getters.Counter.time2가 아니라 store.getters.time2이다
+    function resetTitle () { title.value = '' }
     const changeName = () => store.dispatch('module1/changeUserName', userName.value)
     const loadUser = () => store.dispatch('module1/loadUser')
     function setToken () { thisToken.value = jwtToken }
-    onMounted(() => { // hook에 해당하는 항목들을 vue에서 모듈로 불러와서 setup 안에 실행함수를 넣으면 해당 훅 조건에 맞게 실행된다.
-      loadUser()
-    })
     // token()
-    return { changeName, loadUser, userName, userInfo, jwtToken, setToken, title, chatrooms }
+    return { changeName, loadUser, userName, userInfo, jwtToken, setToken, title, chatrooms, resetTitle }
   },
   mounted () {
     console.log('this.$route.query.token', this.$route.query.token)
 
     this.$store.dispatch('module1/changeJwtToken', this.$route.query.token)
+    this.loadUser()
   },
 
   methods: {
@@ -71,14 +71,15 @@ export default {
       // const vm = this
       const data = {
         title: this.title,
-        masteruserid: { masteruserid: this.userInfo.id }
+        userid: this.userInfo.id
       }
       console.log(data)
+      const vm = this
       $axios
         .post('/api/chat/room', data)
         .then(function (response) {
-          alert('CREATE SUCESS' + this.title)
-          this.title = ''
+          alert('CREATE SUCESS')
+          vm.resetTitle()
           console.log('생성된 방번호(data) : ', response.data)
           console.log('data type : ', typeof response.data)
         })
@@ -95,14 +96,15 @@ export default {
       }
       const userid = this.userInfo.id
       console.log('userid : ', userid)
+      const vm = this
       $axios
         .get('/api/chat/rooms/' + userid)
         .then(function (response) {
           alert('LOAD SUCESS')
           console.log('data : ', response.data)
           console.log('data type : ', typeof response.data)
-          this.chatrooms.value.push(response.data)
-          this.chatrooms = response.data
+          vm.chatrooms.value = response.data
+          vm.chatrooms = response.data
         })
         .catch(function (error) {
           console.log(error)

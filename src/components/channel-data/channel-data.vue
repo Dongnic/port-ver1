@@ -33,13 +33,23 @@
       <!--message 배열만큼 반복, User 1의 작성자가
       현재 날짜로-->
       <ChannelMessage
-        :authorName="userInfo.username"
+        :authorName="message.sender"
         :date="getDate"
         v-for="message in messagesArray"
         :key="message"
       >
-        {{ message }}
+        {{ message.content }}
       </ChannelMessage>
+
+    <div v-for="(m, idx) in messagesArray" :key="idx">
+      <div :class="m.style">
+        <h5 style="margin:3px">
+          {{ m.sender }}
+        </h5>
+        {{ m.content }}
+      </div>
+    </div>
+
     </div>
     <!-- text타입으로 message 작성input tag
     enter키를 누르면 작성한 메세지를 전송-->
@@ -47,10 +57,10 @@
       <input
         type="text"
         name="message"
-        v-model="message"
+        v-model="content"
         placeholder="Type a message here, and press enter."
         id="input-message"
-        @keypress.enter="writeMessage(message)"
+        @keypress.enter="sendMessage()"
       />
       <!--아이콘-->
       <div class="icon">
@@ -62,8 +72,11 @@
 
 <!-- 변수를 정의해놓은 import-->
 <script>
+/* eslint eqeqeq: "off" */
 import At from 'vue-material-design-icons/At'
-import { io } from 'socket.io-client'
+// import { io } from 'socket.io-client'
+import Stomp from 'webstomp-client'
+import SockJS from 'sockjs-client'
 // Components
 import ChannelMessage from './channel-message'
 import Mention from './channel-mention'
@@ -82,27 +95,60 @@ export default {
     return {
       messagesArray: [],
       message: '',
-      date: ''
+      date: '',
+      content: '',
+      id: 1
     }
   },
   // Get initial messages from the server (enable the "created()" function to connect with the server)
   created () {
-    this.socket = io('http://192.168.0.20:3001/')
-    this.socket.on('getInitialMessages', messages => {
-      this.messagesArray = messages
-    })
+    // this.socket = io('http://192.168.0.20:8080/ws')
+    // this.socket.on('getInitialMessages', messages => {
+    //   this.messagesArray = messages
+    // }),
+    // socket 연결
+    const socket = new SockJS('http://192.168.0.20:8080/ws')
+    this.stompClient = Stomp.over(socket)
+    this.stompClient.connect({},
+      frame => {
+        console.log('success', frame)
+        this.stompClient.subscribe('/sub/' + 1, res => {
+          const jsonBody = JSON.parse(res.body)
+          const m = {
+            sender: jsonBody.userid.id,
+            content: jsonBody.message,
+            style: jsonBody.userid.id == this.id ? 'myMsg' : 'otherMsg'
+          }
+          this.messagesArray.push(m)
+        })
+      },
+      err => {
+        console.log('fail', err)
+      }
+    )
   },
   // Sending messages to server, and getting the returned messages
   methods: {
-    writeMessage (message) {
-      this.socket.emit('sendMessage', message)
-      this.message = ''
-      this.getReturnedMessage()
-    },
-    getReturnedMessage () {
-      this.socket.on('returnMessage', messages => {
-        this.messagesArray = messages
-      })
+    // writeMessage (message) {
+    //   this.socket.emit('sendMessage', message)
+    //   this.message = ''
+    //   this.getReturnedMessage()
+    // },
+    // getReturnedMessage () {
+    //   this.socket.on('returnMessage', messages => {
+    //     this.messagesArray = messages
+    //   })
+    // }
+    sendMessage () {
+      if (this.content.trim() != '' && this.stompClient != null) {
+        const chatMessage = {
+          message: this.content,
+          chatroomid: { id: 1 },
+          userid: { id: 1 }
+        }
+        this.stompClient.send('/pub/message', JSON.stringify(chatMessage), {})
+        this.content = ''
+      }
     }
   },
   // Get date
