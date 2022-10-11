@@ -1,13 +1,30 @@
 <template>
   <!-- layout  -->
   <div id="grid">
-    <ServerList :tabs="tabs" :currentTab="currentTab" />
-    <ServerName serverName="port Server" />
+    <ServerList :chatRoomList="chatRoomList" :activeChatRoom="activeChatRoom" @changeRoom="changeRoom"/>
+    <ServerName :chatRoomName="chatRoomInfo.title" />
     <ChannelList />
-    <UserInfo :userName="userInfo.username" />
     <ChannelInfo channelName="CRB's Channel" />
     <ChannelData :userInfo="userInfo"/>
-    <UserList :Userlist="Userlist" />
+    <UserInfo :userInfo="userInfo" />
+    <UserList :userList="userList" />
+    <!-- <p>----------------------------------
+    jwtToken, userInfo, userList, chatRoomList, activeChatRoom, activeChannel
+    ----------------------------------</p>
+    <h6>
+      <br/>-------jwtToken -------
+      <br/>{{jwtToken}}
+      <br/>-------userInfo -------
+      <br/>{{userInfo}}
+      <br/>-------userList -------
+      <br/>{{userList}}
+      <br/>-------chatRoomList -------
+      <br/>{{chatRoomList}}
+      <br/>-------activeChatRoom -------
+      <br/>{{activeChatRoom}}
+      <br/>-------activeChannel -------
+      <br/>{{activeChannel}}
+    </h6> -->
   </div>
 </template>
 
@@ -27,26 +44,50 @@ import { useRoute } from 'vue-router'
 export default {
   name: 'PortChat',
   setup () {
-    console.log('setup')
+    console.log('================= PortChat setup() ==================')
     const store = useStore()
     const route = useRoute()
-    // const route = useRoute()
+
     const setToken = () => store.dispatch('module1/changeJwtToken', route.query.token)
     setToken()
-    const load = () => store.dispatch('module1/loadUser')
-    load()
-    const loadList = () => store.dispatch('module1/loadUserList')
-    loadList()
+    // const getUserInfo = () => store.dispatch('module1/getUserInfo')
+    // getUserInfo()
+    // const getUserList = () => store.dispatch('module1/getUserList')
+    // getUserList()
+    // const getChatRoomList = () => store.dispatch('module1/getChatRoomList', userInfo.value.id)
+    // getChatRoomList()
+    const getChatRoomInfo = () => store.dispatch('module1/getChatRoomInfo')
+    // getChatRoomInfo()
+
+    const jwtToken = computed(() => store.getters['module1/getJwtToken'])
     const userInfo = computed(() => store.getters['module1/getUserInfo'])
     const userList = computed(() => store.getters['module1/getUserList'])
-    const jwtToken = computed(() => store.getters['module1/getJwtToken'])
-    console.log('userInfo : ', userInfo)
+    const chatRoomList = computed(() => store.getters['module1/getChatRoomList'])
+    const chatRoomInfo = computed(() => store.getters['module1/getChatRoomInfo'])
+    const activeChatRoom = computed(() => store.getters['module1/getActiveChatRoom'])
+    const activeChannel = computed(() => store.getters['module1/getActiveChannel'])
+
     console.log('jwtToken : ', jwtToken)
-    return { userInfo, jwtToken, userList }
+    console.log('userInfo : ', userInfo)
+    console.log('userList : ', userList)
+    console.log('chatRoomList : ', chatRoomList)
+    console.log('chatRoomInfo : ', chatRoomInfo)
+    console.log('activeChatRoom : ', activeChatRoom)
+    console.log('activeChannel : ', activeChannel)
+    return {
+      jwtToken,
+      userInfo,
+      userList,
+      chatRoomList,
+      chatRoomInfo,
+      activeChatRoom,
+      activeChannel,
+      getChatRoomInfo
+    }
   },
   mounted () {
-    console.log('mounted')
-    console.log('this.$route.query.token', this.$route.query.token)
+    console.log('=========mounted==========')
+    console.log('= mounted = this.$route.query.token : ', this.$route.query.token)
   },
   components: {
     ServerList,
@@ -57,49 +98,10 @@ export default {
     ChannelData,
     UserList
   },
-  data () {
-    return {
-      // User list
-      Userlist: {
-        onlineUsers: [
-          {
-            name: 'CRB',
-            isBot: false
-          },
-          {
-            name: 'Bot 1',
-            isBot: true
-          },
-          {
-            name: 'User 1',
-            isBot: false
-          }
-        ],
-        offlineUsers: [
-          {
-            name: 'Bot 9',
-            isBot: true
-          },
-          {
-            name: 'Bot 25',
-            isBot: true
-          },
-          {
-            name: 'User 21',
-            isBot: false
-          },
-          {
-            name: 'User 76',
-            isBot: false
-          },
-          {
-            name: 'Bot 3',
-            isBot: true
-          }
-        ]
-      },
-      currentTab: 0, // 기본 currentTab 값 지정
-      tabs: ['tab1', 'tab2', 'tab3']
+  methods: {
+    changeRoom (no) {
+      console.log(' PortChat changeRoom ', no)
+      this.$store.dispatch('module1/changeActiveChatRoom', no)
     }
   }
 }

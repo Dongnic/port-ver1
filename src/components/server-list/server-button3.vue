@@ -6,8 +6,8 @@
       'serverButton-isHome': isHome,
       active: selected
     }"
-    @click="childselected"
-  ></div>
+    @click="changeRoom"
+  >{{chatRoomInfo.id}}</div>
 </template>
 
 <script>
@@ -17,12 +17,13 @@ export default {
     isHome: Boolean,
     hasNotifications: Boolean,
     mentions: Number,
-    cTab: Number,
-    no: Number
+    no: Number,
+    chatRoomInfo: Object
   },
   methods: {
-    childselected () {
-      this.$emit('parentselected', this.no)
+    changeRoom () {
+      console.log('changeRoom 클릭')
+      this.$emit('changeRoom', this.no)
     }
   }
 }

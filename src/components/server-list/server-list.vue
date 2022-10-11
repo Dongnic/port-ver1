@@ -15,16 +15,13 @@
       <ServerButton hasNotifications :mentions="12" />
       <ServerButton />
       <div class="separator"></div>
-      <server-button-2></server-button-2>
-      <div class="separator"></div>
-      {{ cTab }}
       <server-button-3
-        v-for="(tab, index) in tabs"
+        v-for="(chatRoom, index) in chatRoomList"
         :key="index"
-        :no="index"
-        :cTab="cTab"
-        :selected="index === cTab"
-        @parentselected="clickedServer"
+        :no="chatRoom.id"
+        :chatRoomInfo="chatRoom"
+        :selected="chatRoom.id === activeChatRoom"
+        @changeRoom="changeRoom"
       >
       </server-button-3>
     </div>
@@ -34,33 +31,27 @@
 <script>
 import HomeButton from './home-button.vue'
 import ServerButton from './server-button.vue'
-import ServerButton2 from './server-button2.vue'
 import ServerButton3 from './server-button3.vue'
 
 export default {
   props: {
-    tabs: Array,
-    currentTab: Number
+    chatRoomList: Array,
+    activeChatRoom: Number
   },
   components: {
     HomeButton,
     ServerButton,
-    ServerButton2,
     ServerButton3
   },
-  data () {
-    return {
-      cTab: 1
-    }
-  },
   watch: {
-    cTab (newTab) {
-      console.log('newTab: ' + newTab)
+    activeChatRoom (newTab) {
+      console.log('chatRoom: ' + newTab)
     }
   },
   methods: {
-    clickedServer (Key) {
-      this.cTab = Key
+    changeRoom (no) {
+      console.log(' list changeRoom ', no)
+      this.$emit('changeRoom', no)
     }
   }
 }

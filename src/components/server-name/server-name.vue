@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="title">{{ serverName }}</div>
+    <div class="title">{{ chatRoomName }}</div>
     <div class="icon">
       <ExpandIcon :size="28" />
     </div>
@@ -11,7 +11,7 @@
 import ExpandIcon from 'vue-material-design-icons/ChevronDown'
 export default {
   props: {
-    serverName: String
+    chatRoomName: String
   },
   components: {
     ExpandIcon

@@ -1,17 +1,17 @@
 <template>
   <div class="container">
     <div class="profile">
-      <div class="avatar"></div>
+      <div class="avatar" :style="{ 'background-Image' : 'url(' + userInfo.profileimage + ')' }"></div>
       <div class="user-data">
         <!-- 콧수염표현식으로 userName의 값을 화면에 출력 -->
-        <strong>{{ userName }}</strong>
-        <span>#011</span>
+        <strong>{{ userInfo.username }}</strong>
+        <span>#{{ userInfo.id }}</span>
       </div>
     </div>
     <div class="actions">
       <!-- 각 컴포넌트(이미지-아이콘)의 사이즈 지정 -->
-      <Mic :size="20" />
-      <HeadPhones :size="20" />
+      <!-- <Mic :size="20" />
+      <HeadPhones :size="20" /> -->
       <Settings :size="20" />
     </div>
   </div>
@@ -25,7 +25,7 @@ import Settings from 'vue-material-design-icons/CogOutline'
 export default {
   // 상위컴포넌트로부터 userName의 값(String타입)을 받는다.
   props: {
-    userName: String
+    userInfo: String
   },
   components: {
     // Mic,
@@ -56,9 +56,9 @@ export default {
 .avatar {
   width: 32px;
   height: 32px;
-
   border-radius: 50%;
   background-color: var(--grey);
+  background-size: cover;
 }
 
 .user-data {

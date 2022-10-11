@@ -37,6 +37,7 @@
         :date="getDate"
         v-for="message in messagesArray"
         :key="message"
+         style="white-space:pre-line"
       >
         {{ message.content }}
       </ChannelMessage>
@@ -54,13 +55,20 @@
     <!-- text타입으로 message 작성input tag
     enter키를 누르면 작성한 메세지를 전송-->
     <div class="input-wrapper">
-      <input
+      <!-- <input
         type="text"
         name="message"
         v-model="content"
         placeholder="Type a message here, and press enter."
         id="input-message"
         @keypress.enter="sendMessage()"
+      /> -->
+      <textarea
+        name="message"
+        v-model="content"
+        placeholder="Type a message here, and press enter."
+        id="input-message"
+        @keypress.enter="sendMessage"
       />
       <!--아이콘-->
       <div class="icon">
@@ -80,7 +88,7 @@ import SockJS from 'sockjs-client'
 // Components
 import ChannelMessage from './channel-message'
 import Mention from './channel-mention'
-
+import $axios from 'axios'
 export default {
   name: 'channel-data',
   props: {
@@ -97,7 +105,7 @@ export default {
       message: '',
       date: '',
       content: '',
-      id: 1
+      roomid: 1
     }
   },
   // Get initial messages from the server (enable the "created()" function to connect with the server)
@@ -106,6 +114,25 @@ export default {
     // this.socket.on('getInitialMessages', messages => {
     //   this.messagesArray = messages
     // }),
+    // 채팅방 내용 불러오기
+    $axios.get('/api/chat/room/message/' + this.roomid)
+      .then(
+        res => {
+          this.messagesArray = []
+          for (let i = res.data.length - 1; i > -1; i--) {
+            const m = {
+              senderNickname: res.data[i].senderNickname,
+              content: res.data[i].content,
+              style: res.data[i].senderId == this.id ? 'myMsg' : 'otherMsg'
+            }
+            this.msg.push(m)
+          }
+        },
+        err => {
+          console.log(err)
+          // alert('error : 새로고침하세요')
+        }
+      )
     // socket 연결
     const socket = new SockJS('http://192.168.0.20:8080/ws')
     this.stompClient = Stomp.over(socket)
@@ -116,8 +143,8 @@ export default {
           const jsonBody = JSON.parse(res.body)
           const m = {
             sender: jsonBody.userid.id,
-            content: jsonBody.message,
-            style: jsonBody.userid.id == this.id ? 'myMsg' : 'otherMsg'
+            content: jsonBody.message, // .replace(/(?:\r\n|\r|\n)/g, '<br/>'),
+            style: jsonBody.userid.id == this.userInfo.id ? 'myMsg' : 'otherMsg'
           }
           this.messagesArray.push(m)
         })
@@ -139,16 +166,19 @@ export default {
     //     this.messagesArray = messages
     //   })
     // }
-    sendMessage () {
-      if (this.content.trim() != '' && this.stompClient != null) {
-        const chatMessage = {
-          message: this.content,
-          chatroomid: { id: 1 },
-          userid: { id: 1 }
+    sendMessage (e) {
+      if (!e.ctrlKey) {
+        if (this.content.trim() != '' && this.stompClient != null) {
+          const chatMessage = {
+            message: this.content,
+            chatroomid: { id: 1 },
+            userid: { id: this.userInfo.id }
+          }
+          this.stompClient.send('/pub/message', JSON.stringify(chatMessage), {})
+          this.content = ''
+          e.preventDefault()
         }
-        this.stompClient.send('/pub/message', JSON.stringify(chatMessage), {})
-        this.content = ''
-      }
+      } else { this.content += '\r\n' }
     }
   },
   // Get date
@@ -176,7 +206,8 @@ export default {
   padding: 0 16px;
   height: 68px;
 
-  input {
+  // input,
+  textarea {
     margin-top: 12px;
     width: 100%;
     height: 44px;
