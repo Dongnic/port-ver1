@@ -1,5 +1,5 @@
 <template>
-  <div class="signup">
+  <div class="login-signup">
     <h2>Join</h2>
     <hr /><br />
     <form @submit.prevent="onSubmit()">

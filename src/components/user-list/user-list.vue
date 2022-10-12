@@ -4,21 +4,24 @@
     <!-- 스크립트에서 정의한 컴포넌트 이름 사용
     -> v-for문으로 Userlist의 onlineUsers의 데이터를 가져온다. -->
     <UserRow
-      v-for="user in Userlist.onlineUsers"
-      :key="user.name"
-      :nickName="user.name"
+      v-for="user in userList"
+      :key="user.id"
+      :nickName="user.username"
       :isBot="user.isBot"
+      :profileimage="user.profileimage"
     />
     <!-- :key="user.name" :nickName="user.name" 값이 같은 이유!!
             :key=""는 사용되지는 않지만 명시적으로 써준다 -->
+
     <div class="title-users">Off-line {{ getOfflineUsers }}</div>
+    <!-- 잠시 주석 -->
     <!-- ↓는 위와 같음 -->
-    <UserRow
+    <!-- <UserRow
       v-for="user in Userlist.offlineUsers"
       :key="user.name"
       :nickName="user.name"
       :isBot="user.isBot"
-    />
+    /> -->
   </div>
 </template>
 
@@ -28,7 +31,7 @@ import UserRow from './user-row'
 export default {
   // 상위 compo로부터 Userlist를 Object(객체)(키:값) 형식으로 데이터를 받는다.
   props: {
-    Userlist: Object
+    userList: Object
   },
   // 현재페이지에서 쓸 컴포넌트 정의
   components: {
@@ -45,10 +48,11 @@ export default {
   // using 'computed' is better!!! computed -> getter에 가까움
   computed: {
     getOnlineUsers () {
-      return this.Userlist.onlineUsers.length
+      return this.userList.length
     },
     getOfflineUsers () {
-      return this.Userlist.offlineUsers.length
+      return 0
+      // return this.Userlist.offlineUsers.length
     }
   }
 }

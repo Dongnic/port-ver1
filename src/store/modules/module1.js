@@ -8,6 +8,7 @@ export const module1 = {
     userList: [],
     chatRoomList: [],
     chatRoomInfo: [{ title: 'Home' }],
+    chatMessageList: [],
     activeChatRoom: 0,
     activeChannel: 0
   },
@@ -27,6 +28,12 @@ export const module1 = {
     SET_CHATROOM_INFO (state, value) {
       state.chatRoomInfo = value
     },
+    SET_CHATMESSAGE_LIST (state, value) {
+      state.chatMessageList = value
+    },
+    ADD_CHATMESSAGE_LIST (state, value) {
+      state.chatMessageList.push(value)
+    },
     SET_ACTIVE_CHATROOM (state, value) {
       state.activeChatRoom = value
     },
@@ -45,6 +52,9 @@ export const module1 = {
     changeActiveChatRoom ({ commit, dispatch }, value) {
       commit('SET_ACTIVE_CHATROOM', value)
       dispatch('getChatRoomInfo', value)
+    },
+    addChatMessage ({ commit }, value) {
+      commit('ADD_CHATMESSAGE_LIST', value)
     },
     // context = { state, getters, commit, dispatch, ... }
     // 선택 예시 { commit, getters } commit.함수
@@ -67,7 +77,7 @@ export const module1 = {
           // 채널 정보 가져오기
         })
         .catch(function (error) {
-          console.log(error)
+          console.log('ERROR getUserInfo : ', error)
           commit('SET_USER_NAME', '로그인안함')
         })
     },
@@ -81,7 +91,7 @@ export const module1 = {
           commit('SET_USER_LIST', response.data)
         })
         .catch(function (error) {
-          console.log(error)
+          console.log('ERROR getUserList : ', error)
         })
     },
     getChatRoomList ({ commit }, value) {
@@ -100,10 +110,10 @@ export const module1 = {
           commit('SET_CHATROOM_LIST', response.data)
         })
         .catch(function (error) {
-          console.log(error)
+          console.log('ERROR getChatRoomList : ', error)
         })
     },
-    getChatRoomInfo ({ commit }, value) {
+    getChatRoomInfo ({ commit, dispatch }, value) {
       console.log('=======getChatRoomInfo==========')
       $axios
         .get('/api/chat/room/' + value)
@@ -111,9 +121,23 @@ export const module1 = {
           console.log('### $axios /api/chat/room/' + value, response)
           console.log('ChatRoomInfo data : ', response.data)
           commit('SET_CHATROOM_INFO', response.data)
+          dispatch('getChatMessageList', response.data.id)
         })
         .catch(function (error) {
-          console.log(error)
+          console.log('ERROR getChatRoomInfo : ', error)
+        })
+    },
+    getChatMessageList ({ commit }, value) {
+      commit('SET_CHATMESSAGE_LIST', '')
+      $axios
+        .get('/api/chat/room/message/' + value)
+        .then(function (response) {
+          console.log('### $axios /api/chat/room/message' + value, response)
+          console.log('ChatMessageList data : ', response.data)
+          if (response.data.length > 0) { commit('SET_CHATMESSAGE_LIST', response.data) }
+        })
+        .catch(function (error) {
+          console.log('ERROR getChatMessageList : ', error)
         })
     }
   },
@@ -137,6 +161,10 @@ export const module1 = {
     getChatRoomInfo (state) {
       console.log(state.chatRoomInfo)
       return state.chatRoomInfo
+    },
+    getChatMessageList (state) {
+      console.log(state.chatMessageList)
+      return state.chatMessageList
     },
     getActiveChatRoom (state) {
       console.log(state.activeChatRoom)

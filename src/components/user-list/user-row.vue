@@ -6,7 +6,7 @@
         {적용될 클래스명 : true or false의 조건식}
         결론 = isBot이 트루이면 클래스명이 botAvatar이므로
         그에 맞는 css적용.-->
-    <div class="avatar" :class="{ botAvatar: isBot }"></div>
+    <div class="avatar" :class="{ botAvatar: isBot }" :style="{ 'background-Image' : 'url(' + profileimage + ')' }"></div>
     <!-- String타입의 닉네임 출력 -->
     <strong>{{ nickName }}</strong>
     <!-- v-if로 isBot이 true이면 bot출력. <-------이란 뜻인가요??????? -->
@@ -19,7 +19,8 @@
 export default {
   props: {
     isBot: Boolean,
-    nickName: String
+    nickName: String,
+    profileimage: String
   }
 }
 </script>
@@ -67,6 +68,7 @@ export default {
     flex-shrink: 0;
     background-color: var(--primary);
     border-radius: 50px;
+    background-size: cover;
   }
 
   .botAvatar {

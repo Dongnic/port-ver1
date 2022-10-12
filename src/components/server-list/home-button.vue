@@ -1,6 +1,6 @@
 <template>
   <div class="server-button" @click="this.$router.push('/')">
-    <img src="../../assets/images/port-logo.png" alt="logo" />
+    <img :src="require('@/assets/images/port-logo.png')" alt="logo" />
   </div>
 </template>
 

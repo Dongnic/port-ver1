@@ -2,7 +2,7 @@
   입니다!!!!!!!!!!!!!!!!!!-->
 <template>
   <div class="container">
-    <div class="messages">
+    <div class="messages" id="messages">
       <!-- 메세지를 1번 반복한다.
       key는 message, authorName은 작성자
       date는 날짜를 쓰기 위함. 지정하지 않으면 현재 시간
@@ -33,24 +33,16 @@
       <!--message 배열만큼 반복, User 1의 작성자가
       현재 날짜로-->
       <ChannelMessage
-        :authorName="message.sender"
-        :date="getDate"
-        v-for="message in messagesArray"
-        :key="message"
+        v-for="(msg, index) in messagesArray"
+        :key="index"
+        :authorName="msg.userid.username"
+        :profileimage="msg.userid.profileimage"
+        :date="msg.regdate"
          style="white-space:pre-line"
+        :isMe="msg.userid.id == userInfo.id"
       >
-        {{ message.content }}
+        {{ msg.message }}
       </ChannelMessage>
-
-    <div v-for="(m, idx) in messagesArray" :key="idx">
-      <div :class="m.style">
-        <h5 style="margin:3px">
-          {{ m.sender }}
-        </h5>
-        {{ m.content }}
-      </div>
-    </div>
-
     </div>
     <!-- text타입으로 message 작성input tag
     enter키를 누르면 작성한 메세지를 전송-->
@@ -88,11 +80,21 @@ import SockJS from 'sockjs-client'
 // Components
 import ChannelMessage from './channel-message'
 import Mention from './channel-mention'
-import $axios from 'axios'
+// import $axios from 'axios'
+import { useStore } from 'vuex'
+import { computed } from 'vue'
+
 export default {
   name: 'channel-data',
   props: {
-    userInfo: Object
+    activeChatRoom: Number
+  },
+  setup () {
+    const store = useStore()
+    const messagesArray = computed(() => store.getters['module1/getChatMessageList'])
+    const chatRoomInfo = computed(() => store.getters['module1/getChatRoomInfo'])
+    const userInfo = computed(() => store.getters['module1/getUserInfo'])
+    return { messagesArray, chatRoomInfo, userInfo }
   },
   components: {
     At,
@@ -101,58 +103,62 @@ export default {
   },
   data () {
     return {
-      messagesArray: [],
       message: '',
       date: '',
-      content: '',
-      roomid: 1
+      content: ''
     }
   },
   // Get initial messages from the server (enable the "created()" function to connect with the server)
-  created () {
+  mounted () {
     // this.socket = io('http://192.168.0.20:8080/ws')
     // this.socket.on('getInitialMessages', messages => {
     //   this.messagesArray = messages
     // }),
     // 채팅방 내용 불러오기
-    $axios.get('/api/chat/room/message/' + this.roomid)
-      .then(
-        res => {
-          this.messagesArray = []
-          for (let i = res.data.length - 1; i > -1; i--) {
-            const m = {
-              senderNickname: res.data[i].senderNickname,
-              content: res.data[i].content,
-              style: res.data[i].senderId == this.id ? 'myMsg' : 'otherMsg'
-            }
-            this.msg.push(m)
-          }
-        },
-        err => {
-          console.log(err)
-          // alert('error : 새로고침하세요')
-        }
-      )
-    // socket 연결
-    const socket = new SockJS('http://192.168.0.20:8080/ws')
-    this.stompClient = Stomp.over(socket)
-    this.stompClient.connect({},
-      frame => {
-        console.log('success', frame)
-        this.stompClient.subscribe('/sub/' + 1, res => {
-          const jsonBody = JSON.parse(res.body)
-          const m = {
-            sender: jsonBody.userid.id,
-            content: jsonBody.message, // .replace(/(?:\r\n|\r|\n)/g, '<br/>'),
-            style: jsonBody.userid.id == this.userInfo.id ? 'myMsg' : 'otherMsg'
-          }
-          this.messagesArray.push(m)
-        })
-      },
-      err => {
-        console.log('fail', err)
-      }
-    )
+    console.log('== channel-data created==')
+    // $axios.get('/api/chat/room/message/' + this.roomid)
+    //   .then(
+    //     res => {
+    //       console.log('ChatMessageList data : ', res.data)
+    //       this.messagesArray = []
+    //       for (let i = res.data.length - 1; i > -1; i--) {
+    //         const m = {
+    //           senderNickname: res.data[i].senderNickname,
+    //           content: res.data[i].content,
+    //           style: res.data[i].senderId == this.id ? 'myMsg' : 'otherMsg'
+    //         }
+    //         this.messagesArray.push(m)
+    //       }
+    //     },
+    //     err => {
+    //       console.log(err)
+    //       // alert('error : 새로고침하세요')
+    //     }
+    //   )
+    // // socket 연결
+    // const socket = new SockJS('http://192.168.0.20:8080/ws')
+    // this.stompClient = Stomp.over(socket)
+    // this.stompClient.connect({},
+    //   frame => {
+    //     console.log('success', frame)
+    //     console.log('chatRoomInfo.id : ', this.chatRoomInfo.id)
+    //     this.stompClient.subscribe('/sub/' + this.chatRoomInfo.id, res => {
+    //       const jsonBody = JSON.parse(res.body)
+    //       console.log('jsonBody : ', jsonBody)
+    //       const m = {
+    //         id: jsonBody.id,
+    //         userid: jsonBody.userid,
+    //         message: jsonBody.message, // .replace(/(?:\r\n|\r|\n)/g, '<br/>'),
+    //         regdate: jsonBody.regdate,
+    //         isMe: jsonBody.userid.id == this.userInfo.id
+    //       }
+    //       this.messagesArray.push(m)
+    //     })
+    //   },
+    //   err => {
+    //     console.log('fail', err)
+    //   }
+    // )
   },
   // Sending messages to server, and getting the returned messages
   methods: {
@@ -171,8 +177,14 @@ export default {
         if (this.content.trim() != '' && this.stompClient != null) {
           const chatMessage = {
             message: this.content,
-            chatroomid: { id: 1 },
-            userid: { id: this.userInfo.id }
+            chatroomid: this.chatRoomInfo,
+            // chatroomid: {
+            //   id: this.chatRoomInfo.id,
+            //   title: this.chatRoomInfo.title,
+            //   regdate: this.chatRoomInfo.regdate,
+            //   userid: this.userInfo
+            // },
+            userid: this.userInfo
           }
           this.stompClient.send('/pub/message', JSON.stringify(chatMessage), {})
           this.content = ''
@@ -185,6 +197,47 @@ export default {
   computed: {
     getDate () {
       return new Date().toString()
+    }
+  },
+  watch: {
+    messagesArray () {
+      console.log('messagesArray change ')
+      this.$nextTick(() => {
+        const div = document.getElementById('messages')
+        div.scrollTop = div.scrollHeight
+      })
+    },
+    chatRoomInfo (newInfo) {
+      console.log('chatRoomInfo')
+      // socket 연결
+      const socket = new SockJS('http://192.168.0.20:8080/ws')
+      this.stompClient = Stomp.over(socket)
+      this.stompClient.connect({},
+        frame => {
+          console.log('success', frame)
+          console.log('chatRoomInfo.id : ', newInfo.id)
+          this.stompClient.subscribe('/sub/' + newInfo.id, res => {
+            const jsonBody = JSON.parse(res.body)
+            console.log('jsonBody : ', jsonBody)
+            const m = {
+              id: jsonBody.id,
+              userid: jsonBody.userid,
+              message: jsonBody.message, // .replace(/(?:\r\n|\r|\n)/g, '<br/>'),
+              regdate: jsonBody.regdate,
+              isMe: jsonBody.userid.id == this.userInfo.id
+            }
+            this.$store.dispatch('module1/addChatMessage', m)
+            // this.messagesArray.push(m)
+            this.$nextTick(() => {
+              const div = document.getElementById('messages')
+              div.scrollTop = div.scrollHeight
+            })
+          }, { userid: this.userInfo.id })
+        },
+        err => {
+          console.log('fail', err)
+        }
+      )
     }
   }
 }

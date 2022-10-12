@@ -1,9 +1,9 @@
 <template>
-  <div class="container">
-      <div class="backbox">
+  <div class="login-container">
+      <div class="login-backbox">
         <LoginMsg :isLogin="isLogin" @switchLogin="switchLogin"></LoginMsg>
       </div>
-      <div class="frontbox" :class="{'moving' : !isLogin}">
+      <div class="login-frontbox" :class="{'moving' : !isLogin}">
         <Login v-show="isLogin"></Login>
         <Join v-show="!isLogin"></Join>
       </div>
@@ -34,11 +34,11 @@ export default {
   }
 }
 </script>
-<style lang="scss">
+<style lang="sass">
 @import "@/assets/scss/loginjoin.scss"
 </style>
 <style scoped>
-.container{
+  .login-container{
     /*border:1px solid white;*/
     width: 600px;
     height: 350px;
@@ -46,19 +46,19 @@ export default {
     top:50%;
     left:50%;
     transform: translate(-50%, -50%);
-    display: inline-flex !important;
+    display: inline-flex;
   }
-  .backbox{
+  .login-backbox{
     background-color: #404040;
     width: 100%;
     height: 80%;
     position: absolute;
     transform: translate(0,-50%);
     top:50%;
-    display: inline-flex !important;
+    display: inline;
   }
 
-  .frontbox{
+  .login-frontbox{
     background-color: white;
     border-radius: 20px;
     height: 100%;
@@ -74,5 +74,4 @@ export default {
   .moving{
     right:45%;
   }
-
 </style>
